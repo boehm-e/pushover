@@ -46,38 +46,43 @@ Git.prototype.mkdir = function (dir, cb) {
 };
 
 Git.prototype.create = function (repo, cb) {
-  console.log("CREEATING REPO");
-  var self = this;
-  if (typeof cb !== 'function') cb = function () {};
-  var cwd = process.cwd();
+    console.log("CREEATING REPO");
+    console.log('_0');
+    var self = this;
+    if (typeof cb !== 'function') cb = function () {};
+    var cwd = process.cwd();
 
-  if (!/\.git$/.test(repo)) repo += '.git';
+    if (!/\.git$/.test(repo)) repo += '.git';
 
-  self.exists(repo, function (ex) {
-    if (!ex) self.mkdir(repo, next)
-    else next()
-  });
-
-  function next (err) {
-    if (err) return cb(err);
-
-    var dir = self.dirMap(repo);
-    if (self.checkout) {
-      var ps = spawn('git', [ 'init', dir ]);
-    }
-    else {
-      var ps = spawn('git', [ 'init', '--bare', dir ]);
-    }
-
-    var err = '';
-    ps.stderr.on('data', function (buf) { err += buf });
-
-    onexit(ps, function (code) {
-      if (!cb) {}
-      else if (code) cb(err || true)
-      else cb(null)
+    self.exists(repo, function (ex) {
+	console.log('_1');
+	if (!ex) self.mkdir(repo, next)
+	else next()
     });
-  }
+
+    function next (err) {
+	console.log('_2');
+	if (err) return cb(err);
+	console.log('_3');
+
+	var dir = self.dirMap(repo);
+	if (self.checkout) {
+	    var ps = spawn('git', [ 'init', dir ]);
+	}
+	else {
+	    var ps = spawn('git', [ 'init', '--bare', dir ]);
+	}
+
+	var err = '';
+	ps.stderr.on('data', function (buf) { err += buf });
+
+	onexit(ps, function (code) {
+	    console.log('_5');
+	    if (!cb) {}
+	    else if (code) cb(err || true)
+	    else cb(null)
+	});
+    }
 };
 
 Git.prototype.handle = require('./lib/handle');
