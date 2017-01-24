@@ -11,15 +11,10 @@ var onexit = require('./lib/onexit');
 
 module.exports = function (repoDir, opts) {
   if (!opts) opts = {};
-  // var dirMap = typeof repoDir === 'function'
-  // ? repoDir
-  // : function (dir) { return path.join(repoDir, dir) }
+    var dirMap = typeof repoDir === 'function'
+    ? repoDir
+    : function (dir) { return path.join(repoDir, dir) }
 
-  var dirMap = function(dir) {
-    return path.join(repoDir,dir);
-  }
-  // : function () { repoDir }
-  ;
   return new Git(dirMap, opts);
 };
 
@@ -46,8 +41,6 @@ Git.prototype.mkdir = function (dir, cb) {
 };
 
 Git.prototype.create = function (repo, cb) {
-  console.log("CREEATING REPO");
-  console.log('_0');
   var self = this;
   if (typeof cb !== 'function') cb = function () {};
   var cwd = process.cwd();
@@ -55,24 +48,20 @@ Git.prototype.create = function (repo, cb) {
   if (!/\.git$/.test(repo)) repo += '.git';
 
   self.exists(repo, function (ex) {
-    console.log('_1');
     if (!ex) self.mkdir(repo, next)
     else next()
   });
 
   function next (err) {
-    console.log('_2');
     if (err) return cb(err);
-    console.log('_3');
 
     var dir = self.dirMap(repo);
-    console.log('_4');
 
     if (self.checkout) {
-      var ps = spawn('git', [ 'init', dir ]);
+      var ps = spawn('/run/current-system/sw/bin/git', [ 'init', dir ]);
     }
     else {
-      var ps = spawn('git', [ 'init', '--bare', dir ]);
+      var ps = spawn('/run/current-system/sw/bin/git', [ 'init', '--bare', dir ]);
     }
 
     var err = '';
@@ -82,7 +71,6 @@ Git.prototype.create = function (repo, cb) {
     });
 
     onexit(ps, function (code) {
-      console.log('_5');
       if (!cb) {}
       else if (code) cb(err || true)
       else cb(null)
